@@ -395,6 +395,10 @@ Ein geöffneter Tooltip lässt sich mit der 'Escape'-Taste schließen, um ggf. �
 
 **Hinweis:** Damit der Tooltip korrekt ausgerichtet wird, muss für das vorrangehende Referenz-Element 'inline-block' gesetzt werden.`,
 	props: `_align, _id, _label`
+},{
+	name: `tree`,
+	desc: ``,
+	props: `_expanded, _id, _label, _nodes`
 },
 				];
 			</script>
@@ -438,15 +442,15 @@ Ein geöffneter Tooltip lässt sich mit der 'Escape'-Taste schließen, um ggf. �
 	types: `boolean`,
 	comps: `button, button-link, input-checkbox, input-color, input-date, input-email, input-file, input-number, input-password, input-radio, input-range, input-text, link, link-button, select, textarea`
 },{
+	name: `_id`,
+	desc: `Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.`,
+	types: `string`,
+	comps: `button, button-link, input-checkbox, input-color, input-date, input-email, input-file, input-number, input-password, input-radio, input-range, input-text, select, textarea, tooltip, tree`
+},{
 	name: `_icon`,
 	desc: `Ermöglicht das Anzeigen von Icons links und/oder rechts am Rand des Eingabefeldes.`,
 	types: `string, string | { checked: string; indeterminate?: string | undefined; unchecked?: string | undefined; } & { checked?: string | undefined; indeterminate: string; unchecked?: string | undefined; } & { checked?: string | undefined; indeterminate?: string | undefined; unchecked: string; }, string | { right: string | KoliBriCustomIcon; left?: string | KoliBriCustomIcon | undefined; } | { right?: string | KoliBriCustomIcon | undefined; left: string | KoliBriCustomIcon; }, string | { top: string | KoliBriCustomIcon; right?: string | KoliBriCustomIcon | undefined; bottom?: string | KoliBriCustomIcon | undefined; left?: string | KoliBriCustomIcon | undefined; } | { top?: string | KoliBriCustomIcon | undefined; right: string | KoliBriCustomIcon; bottom?: string | KoliBriCustomIcon | undefined; left?: string | KoliBriCustomIcon | undefined; } | { top?: string | KoliBriCustomIcon | undefined; right?: string | KoliBriCustomIcon | undefined; bottom: string | KoliBriCustomIcon; left?: string | KoliBriCustomIcon | undefined; } | { top?: string | KoliBriCustomIcon | undefined; right?: string | KoliBriCustomIcon | undefined; bottom?: string | KoliBriCustomIcon | undefined; left: string | KoliBriCustomIcon; }`,
 	comps: `badge, button, button-link, icon, input-checkbox, input-color, input-date, input-email, input-file, input-number, input-password, input-range, input-text, link, link-button, select`
-},{
-	name: `_id`,
-	desc: `Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.`,
-	types: `string`,
-	comps: `button, button-link, input-checkbox, input-color, input-date, input-email, input-file, input-number, input-password, input-radio, input-range, input-text, select, textarea, tooltip`
 },{
 	name: `_alert`,
 	desc: `Gibt an, ob der Screenreader die Meldung vorlesen soll.`,
@@ -511,7 +515,7 @@ Ein geöffneter Tooltip lässt sich mit der 'Escape'-Taste schließen, um ggf. �
 	name: `_label`,
 	desc: `Das Label gibt an, welcher Text in dem Tooltip beim Fokussieren oder Maus-drüberfahren angezeigt wird.`,
 	types: `string`,
-	comps: `badge, button, button-link, heading, link, link-button, tooltip`
+	comps: `badge, button, button-link, heading, link, link-button, tooltip, tree`
 },{
 	name: `_auto-complete`,
 	desc: `Gibt an, ob das Eingabefeld autovervollständigt werden kann.`,
@@ -828,6 +832,16 @@ Ein geöffneter Tooltip lässt sich mit der 'Escape'-Taste schließen, um ggf. �
 	desc: `Gibt den Text der zusätzlichen Beschriftung an.`,
 	types: `string`,
 	comps: `heading`
+},{
+	name: `_nodes`,
+	desc: `Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.`,
+	types: `TreeNode[] | string`,
+	comps: `tree`
+},{
+	name: `_expanded`,
+	desc: `Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.`,
+	types: `boolean`,
+	comps: `tree`
 },{
 	name: `_indeterminate`,
 	desc: `Gibt an, ob die Checkbox weder ausgewählt noch nicht ausgewählt ist.`,

@@ -2177,6 +2177,24 @@ export namespace Components {
          */
         "_label": string;
     }
+    interface KolTree {
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_expanded"?: boolean;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_id": string;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_label": string;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_nodes": Stringified<TreeNode[]>;
+    }
     interface KolVersion {
         /**
           * Gibt die Versionsnummer als Text an.
@@ -2515,6 +2533,12 @@ declare global {
         prototype: HTMLKolTooltipElement;
         new (): HTMLKolTooltipElement;
     };
+    interface HTMLKolTreeElement extends Components.KolTree, HTMLStencilElement {
+    }
+    var HTMLKolTreeElement: {
+        prototype: HTMLKolTreeElement;
+        new (): HTMLKolTreeElement;
+    };
     interface HTMLKolVersionElement extends Components.KolVersion, HTMLStencilElement {
     }
     var HTMLKolVersionElement: {
@@ -2575,6 +2599,7 @@ declare global {
         "kol-textarea": HTMLKolTextareaElement;
         "kol-toast": HTMLKolToastElement;
         "kol-tooltip": HTMLKolTooltipElement;
+        "kol-tree": HTMLKolTreeElement;
         "kol-version": HTMLKolVersionElement;
     }
 }
@@ -4688,6 +4713,24 @@ declare namespace LocalJSX {
          */
         "_label": string;
     }
+    interface KolTree {
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_expanded"?: boolean;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_id": string;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_label": string;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_nodes": Stringified<TreeNode[]>;
+    }
     interface KolVersion {
         /**
           * Gibt die Versionsnummer als Text an.
@@ -4748,6 +4791,7 @@ declare namespace LocalJSX {
         "kol-textarea": KolTextarea;
         "kol-toast": KolToast;
         "kol-tooltip": KolTooltip;
+        "kol-tree": KolTree;
         "kol-version": KolVersion;
     }
 }
@@ -4820,6 +4864,7 @@ declare module "@stencil/core" {
             "kol-textarea": LocalJSX.KolTextarea & JSXBase.HTMLAttributes<HTMLKolTextareaElement>;
             "kol-toast": LocalJSX.KolToast & JSXBase.HTMLAttributes<HTMLKolToastElement>;
             "kol-tooltip": LocalJSX.KolTooltip & JSXBase.HTMLAttributes<HTMLKolTooltipElement>;
+            "kol-tree": LocalJSX.KolTree & JSXBase.HTMLAttributes<HTMLKolTreeElement>;
             "kol-version": LocalJSX.KolVersion & JSXBase.HTMLAttributes<HTMLKolVersionElement>;
         }
     }
