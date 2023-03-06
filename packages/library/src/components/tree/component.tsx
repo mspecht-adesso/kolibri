@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/role-has-required-aria-props */
 import { Component, h, Prop, State, Watch } from '@stencil/core';
 
@@ -10,7 +11,7 @@ type TreeNode = {
 	_expanded?: boolean;
 	_id: string;
 	_label: string;
-	_nodes?: TreeNode[];
+	_nodes: TreeNode[];
 };
 
 /**
@@ -27,6 +28,7 @@ type OptionalProps = {
 export type Props = Generic.Element.Members<RequiredProps, OptionalProps>;
 
 type RequiredStates = {
+	expanded: boolean;
 	id: string;
 	label: string;
 	nodes: TreeNode[];
@@ -89,27 +91,45 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		watchBoolean(this, '_expanded', value);
 	}
 
-	private toggleExpanded(node: TreeNode) {
+	private toggleOnClick(node: TreeNode, event: MouseEvent): void {
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		console.log('/ ----------------------------------------');
+		console.log('toggleOnClick -> _expanded', node._expanded);
+		console.log(node);
+		console.log(event);
+		console.log('---------------------------------------- /');
+
+		node._expanded = !node._expanded;
+		setState(this, '_nodes', this.state._nodes);
+	}
+
+	private toggleOnKeyDown(node: TreeNode, event: KeyboardEvent): void {
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		console.log('/ ----------------------------------------');
+		console.log('toggleOnKeyDown -> _expanded', node._expanded);
+		console.log(node);
+		console.log(event);
+		console.log('---------------------------------------- /');
+
 		node._expanded = !node._expanded;
 		setState(this, '_nodes', this.state._nodes);
 	}
 
 	private renderSubtree(node: TreeNode, index: number) {
-		console.log('----------');
-		console.log('renderSubtree -> node:', node._label);
-		console.log(node);
 		return (
 			<ul>
 				<li
-					onClick={() => this.toggleExpanded(node)}
-					onKeyDown={() => this.toggleExpanded(node)}
+					onClick={(event) => this.toggleOnClick(node, event)}
+					onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
 					key={index}
 					role="treeitem"
 					aria-posinset={index + 1}
 					aria-setsize={node._nodes?.length}
 				>
 					<button>{node._expanded ? '▼' : '▶'}</button>
-					{node._label}
+					{node._label} - {node._expanded ? 'true' : 'false'}
 				</li>
 				{node._nodes &&
 					Array.isArray(node._nodes) &&
@@ -122,36 +142,39 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 
 	render() {
 		return (
-			<ul role="tree">
-				{this.state._nodes.map((node, index) => {
-					console.log('----------');
-					console.log('tree -> node:', node._label);
-					return (
-						<div hidden={this.state._expanded}>
-							<li
-								onClick={() => this.toggleExpanded(node)}
-								onKeyDown={() => this.toggleExpanded(node)}
-								key={index}
-								role="treeitem"
-								aria-posinset={index + 1}
-								aria-setsize={this.state._nodes.length}
-							>
-								<button>{node._expanded ? '▼' : '▶'}</button>
-								{node._label}
-							</li>
-							{node._nodes &&
-								Array.isArray(node._nodes) &&
-								node._nodes?.map((subNode: TreeNode) => {
-									this.renderSubtree(subNode, index);
-								})}
-						</div>
-					);
-				})}
+			<ul role="tree" aria-labelledby="tree_label">
+				{this.state._nodes.length > 0 &&
+					this.state._nodes.map((node, index) => {
+						return (
+							<div hidden={this.state._expanded} key={`node${index}`}>
+								<li
+									role="treeitem"
+									aria-expanded={this.state._expanded}
+									aria-selected={this.state._expanded}
+									onClick={(event) => this.toggleOnClick(node, event)}
+									onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
+								>
+									<button>{node._expanded ? '▼' : '▶'}</button>
+									<span>
+										{node._label} - {node._expanded ? 'true' : 'false'}
+									</span>
+									{node._nodes.length > 0 &&
+										node._nodes?.map((subNode, index) => {
+											return this.renderSubtree(subNode, index);
+										})}
+								</li>
+							</div>
+						);
+					})}
 			</ul>
 		);
 	}
 
 	public componentWillLoad(): void {
+		console.log('**********');
+		console.log('componentWillLoad -> tree-component -> this._nodes');
+		console.log(this._nodes);
+		console.log('**********');
 		this.validateExpanded(this._expanded);
 		this.validateId(this._id);
 		this.validateLabel(this._label);

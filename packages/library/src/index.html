@@ -46,7 +46,7 @@
 						</div>
 						<div class="gap-2 col-12">
 							<kol-tree
-								_nodes="[ {'_label':'Label eins', '_nodes':[{'_label':'Label eins eins', '_nodes':[{'_label':'Label eins eins eins', '_nodes':[]}]}]},{'_label':'Label Zwei', '_nodes':[{'_label':'Label zwei zwei', '_nodes':[{'_label':'Label zwei zwei zwei', '_nodes':[]}]}]}]"
+								_nodes="[{'_expanded': false, '_label':'Label eins', '_nodes':[{'_expanded': false, '_label':'Label eins eins', '_nodes':[{'_expanded': false, '_label':'Label eins eins eins', '_nodes':[]}]}]},{'_expanded': false, '_label':'Label Zwei', '_nodes':[{'_expanded': false, '_label':'Label zwei eins', '_nodes':[{'_expanded': false, '_label':'Label zwei eins eins', '_nodes':[]}]}]},{'_expanded': false, '_label':'Label drei', '_nodes':[{'_expanded': false, '_label':'Label drei eins', '_nodes':[]}]}]"
 							></kol-tree>
 						</div>
 					</div>
@@ -55,3 +55,27 @@
 		</main>
 	</body>
 </html>
+<!--
+<ul role="tree" aria-labelledby="tree_label">
+	<li role="treeitem" aria-expanded="false" aria-selected="false">
+		<span> Projects </span>
+		<ul role="group">
+			<li role="treeitem" aria-selected="false" class="doc">project-1.docx</li>
+			<li role="treeitem" aria-expanded="false" aria-selected="false">
+				<span> Project 2 </span>
+				<ul role="group">
+					<li role="treeitem" aria-selected="false" class="doc">project-2A.docx</li>
+					<li role="treeitem" aria-selected="false" class="doc">project-2B.docx</li>
+					<li role="treeitem" aria-selected="false" class="doc">project-2C.docx</li>
+				</ul>
+			</li>
+			<li role="treeitem" aria-expanded="false" aria-selected="false">
+				<span> Project 3 </span>
+				<ul role="group">
+					<li role="treeitem" aria-selected="false" class="doc">project-3A.docx</li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+</ul>
+-->
