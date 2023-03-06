@@ -95,7 +95,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		event.preventDefault();
 		event.stopImmediatePropagation();
 		console.log('/ ----------------------------------------');
-		console.log('toggleOnClick -> _expanded', node._label);
+		console.log('toggleOnClick -> _expanded', node._label, node._expanded);
 		console.log('---------------------------------------- /');
 		this.toggleExpandedStatus(node);
 	}
@@ -104,7 +104,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		event.preventDefault();
 		event.stopImmediatePropagation();
 		console.log('/ ----------------------------------------');
-		console.log('toggleOnKeyDown -> _expanded', node._label);
+		console.log('toggleOnKeyDown -> node', node._label, node._expanded);
 		console.log('---------------------------------------- /');
 		this.toggleExpandedStatus(node);
 	}
@@ -114,9 +114,12 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		setState(this, '_nodes', this.state._nodes);
 	}
 
-	private renderSubtree(node: TreeNode, index: number) {
+	private renderSubtree(expanded: boolean | undefined, node: TreeNode, index: number) {
+		console.log('//--------------------');
+		console.log('renderSubtree -> node:', node._label, node._expanded);
+		console.log('--------------------//');
 		return (
-			<ul>
+			<ul hidden={!expanded}>
 				<li
 					onClick={(event) => this.toggleOnClick(node, event)}
 					onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
@@ -126,12 +129,12 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 					aria-setsize={node._nodes?.length}
 				>
 					<button>{node._expanded ? '▼' : '▶'}</button>
-					{node._label} - {node._expanded ? 'true' : 'false'}
+					{node._label} - {node._expanded ? 'true' : 'false'} - {node._nodes.length}
 				</li>
 				{node._nodes &&
 					Array.isArray(node._nodes) &&
 					node._nodes.map((subNode) => {
-						console.log('renderSubtree -> subnode:', subNode._label);
+						return this.renderSubtree(node._expanded, subNode, index);
 					})}
 			</ul>
 		);
@@ -143,24 +146,24 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 				{this.state._nodes.length > 0 &&
 					this.state._nodes.map((node, index) => {
 						return (
-							<div hidden={this.state._expanded} key={`node${index}`}>
-								<li
-									role="treeitem"
-									aria-expanded={this.state._expanded}
-									aria-selected={this.state._expanded}
-									onClick={(event) => this.toggleOnClick(node, event)}
-									onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
-								>
-									<button>{node._expanded ? '▼' : '▶'}</button>
-									<span>
-										{node._label} - {node._expanded ? 'true' : 'false'}
-									</span>
-									{node._nodes.length > 0 &&
-										node._nodes?.map((subNode, index) => {
-											return this.renderSubtree(subNode, index);
-										})}
-								</li>
-							</div>
+							<li
+								role="treeitem"
+								aria-expanded={this.state._expanded}
+								aria-selected={this.state._expanded}
+								onClick={(event) => this.toggleOnClick(node, event)}
+								onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
+								hidden={this.state._expanded}
+								key={`node${index}`}
+							>
+								<button>{node._expanded ? '▼' : '▶'}</button>
+								<span>
+									{node._label} - {node._expanded ? 'true' : 'false'} - {node._nodes.length}
+								</span>
+								{node._nodes.length > 0 &&
+									node._nodes?.map((subNode, index) => {
+										return this.renderSubtree(node._expanded, subNode, index);
+									})}
+							</li>
 						);
 					})}
 			</ul>
@@ -168,10 +171,6 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	}
 
 	public componentWillLoad(): void {
-		console.log('**********');
-		console.log('componentWillLoad -> tree-component -> this._nodes');
-		console.log(this._nodes);
-		console.log('**********');
 		this.validateExpanded(this._expanded);
 		this.validateId(this._id);
 		this.validateLabel(this._label);
