@@ -95,24 +95,21 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		event.preventDefault();
 		event.stopImmediatePropagation();
 		console.log('/ ----------------------------------------');
-		console.log('toggleOnClick -> _expanded', node._expanded);
-		console.log(node);
-		console.log(event);
+		console.log('toggleOnClick -> _expanded', node._label);
 		console.log('---------------------------------------- /');
-
-		node._expanded = !node._expanded;
-		setState(this, '_nodes', this.state._nodes);
+		this.toggleExpandedStatus(node);
 	}
 
 	private toggleOnKeyDown(node: TreeNode, event: KeyboardEvent): void {
 		event.preventDefault();
 		event.stopImmediatePropagation();
 		console.log('/ ----------------------------------------');
-		console.log('toggleOnKeyDown -> _expanded', node._expanded);
-		console.log(node);
-		console.log(event);
+		console.log('toggleOnKeyDown -> _expanded', node._label);
 		console.log('---------------------------------------- /');
+		this.toggleExpandedStatus(node);
+	}
 
+	private toggleExpandedStatus(node: TreeNode): void {
 		node._expanded = !node._expanded;
 		setState(this, '_nodes', this.state._nodes);
 	}
