@@ -7,10 +7,12 @@ import { Stringified } from '../../types/common';
 import { nonce } from '../../utils/dev.utils';
 import { setState, watchBoolean, watchJsonArrayString, watchString } from '../../utils/prop.validators';
 import { KolButton } from '../button/shadow';
+import { spawn } from 'child_process';
 
 type TreeNode = {
 	_expanded?: boolean;
 	_id: string;
+	_key?: string;
 	_label: string;
 	_nodes: TreeNode[];
 };
@@ -24,6 +26,7 @@ type RequiredProps = {
 	nodes: Stringified<TreeNode[]>;
 };
 type OptionalProps = {
+	key?: string;
 	expanded?: boolean;
 };
 export type Props = Generic.Element.Members<RequiredProps, OptionalProps>;
@@ -53,6 +56,11 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	/**
 	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
 	 */
+	@Prop() public _key?: string;
+
+	/**
+	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 */
 	@Prop() public _label!: string;
 
 	/**
@@ -75,6 +83,11 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	@Watch('_id')
 	public validateId(value?: string): void {
 		watchString(this, '_id', value);
+	}
+
+	@Watch('_key')
+	public validateKey(value?: string): void {
+		watchString(this, '_key', value);
 	}
 
 	@Watch('_label')
@@ -115,10 +128,11 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		setState(this, '_nodes', this.state._nodes);
 	}
 
+	private keyAction(key: string | undefined) {
+		console.log(key);
+	}
+
 	private renderSubtree(expanded: boolean | undefined, node: TreeNode, index: number) {
-		console.log('//--------------------');
-		console.log('renderSubtree -> node:', node._label, node._expanded);
-		console.log('--------------------//');
 		return (
 			<ul hidden={!expanded}>
 				<li
@@ -126,11 +140,19 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 					onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
 					key={index}
 					role="treeitem"
+					aria-expanded={expanded}
 					aria-posinset={index + 1}
+					aria-selected={expanded}
 					aria-setsize={node._nodes?.length}
 				>
-					{node._nodes.length > 0 ? <button>{node._expanded ? '▼' : '▶'}</button> : <button>▪/✓</button>}
-					{node._label} - {node._expanded ? 'true' : 'false'} - {node._nodes.length}
+					{node._nodes.length > 0 ? <button>{node._expanded ? '▼' : '▶'}</button> : <button>{node._expanded ? '✓' : '▪'}</button>}
+					{node._nodes.length === 0 && node._key ? (
+						<button onClick={() => this.keyAction(node._key)} onKeyDown={() => this.keyAction(node._key)}>
+							{node._label}
+						</button>
+					) : (
+						<span>{node._label}</span>
+					)}
 				</li>
 				{node._nodes &&
 					Array.isArray(node._nodes) &&
@@ -157,9 +179,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 								key={`node${index}`}
 							>
 								<button>{node._expanded ? '▼' : '▶'}</button>
-								<span>
-									{node._label} - {node._expanded ? 'true' : 'false'} - {node._nodes.length}
-								</span>
+								<span>{node._label}</span>
 								{node._nodes.length > 0 &&
 									node._nodes?.map((subNode, index) => {
 										return this.renderSubtree(node._expanded, subNode, index);
@@ -174,6 +194,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	public componentWillLoad(): void {
 		this.validateExpanded(this._expanded);
 		this.validateId(this._id);
+		this.validateKey(this._key);
 		this.validateLabel(this._label);
 		this.validateNodes(this._nodes);
 	}
