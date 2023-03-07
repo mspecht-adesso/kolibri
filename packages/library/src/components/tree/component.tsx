@@ -6,6 +6,7 @@ import { Generic } from '@a11y-ui/core';
 import { Stringified } from '../../types/common';
 import { nonce } from '../../utils/dev.utils';
 import { setState, watchBoolean, watchJsonArrayString, watchString } from '../../utils/prop.validators';
+import { KolButton } from '../button/shadow';
 
 type TreeNode = {
 	_expanded?: boolean;
@@ -128,7 +129,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 					aria-posinset={index + 1}
 					aria-setsize={node._nodes?.length}
 				>
-					<button>{node._expanded ? '▼' : '▶'}</button>
+					{node._nodes.length > 0 ? <button>{node._expanded ? '▼' : '▶'}</button> : <button>▪/✓</button>}
 					{node._label} - {node._expanded ? 'true' : 'false'} - {node._nodes.length}
 				</li>
 				{node._nodes &&
