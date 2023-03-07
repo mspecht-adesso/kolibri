@@ -124,6 +124,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	}
 
 	private toggleExpandedStatus(node: TreeNode): void {
+		console.log('toggleExpandedStatus ->', node._expanded);
 		node._expanded = !node._expanded;
 		setState(this, '_nodes', this.state._nodes);
 	}
@@ -140,9 +141,9 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 					onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
 					key={index}
 					role="treeitem"
-					aria-expanded={expanded}
+					aria-expanded={expanded ? 'expanded' : 'collapsed'}
 					aria-posinset={index + 1}
-					aria-selected={expanded}
+					aria-selected={node._expanded ? 'true' : 'false'}
 					aria-setsize={node._nodes?.length}
 				>
 					{node._nodes.length > 0 ? <button>{node._expanded ? '▼' : '▶'}</button> : <button>{node._expanded ? '✓' : '▪'}</button>}
@@ -171,8 +172,8 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 						return (
 							<li
 								role="treeitem"
-								aria-expanded={this.state._expanded}
-								aria-selected={this.state._expanded}
+								aria-expanded={this.state._expanded ? 'expanded' : 'collapsed'}
+								aria-selected={node._expanded ? 'true' : 'false'}
 								onClick={(event) => this.toggleOnClick(node, event)}
 								onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
 								hidden={this.state._expanded}
