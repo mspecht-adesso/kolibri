@@ -267,6 +267,8 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 					key={index}
 					role="treeitem"
 					aria-expanded={expanded ? 'expanded' : 'collapsed'}
+					aria-hidden={expanded}
+					aria-label={node._label}
 					aria-posinset={index + 1}
 					aria-selected={node._expanded ? 'true' : 'false'}
 					aria-setsize={node._nodes?.length}
@@ -305,7 +307,11 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 							<li
 								role="treeitem"
 								aria-expanded={this.state._expanded ? 'expanded' : 'collapsed'}
+								aria-hidden={this.state._expanded}
+								aria-label={node._label}
+								aria-posinset={index + 1}
 								aria-selected={node._expanded ? 'true' : 'false'}
+								aria-setsize={node._nodes?.length}
 								hidden={this.state._expanded}
 								key={`node${index}`}
 								data-key={node._key}
