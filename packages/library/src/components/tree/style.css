@@ -1,5 +1,56 @@
 @import '../style.css';
 
-ul {
+ul.tree {
+	position: relative;
 	list-style-type: none;
+	width: 300px;
+	margin: 0;
+	padding: 0;
+}
+
+ul.tree li {
+	position: relative;
+	margin: 0;
+	margin-left: 0;
+	padding: 0;
+}
+
+ul.tree li button.action {
+	position:absolute;
+	right: 0;
+	top: 1px;
+	margin: 0;
+	padding: 0;
+	min-height: 18px;
+	min-width: 18px;
+}
+
+ul.node {
+	list-style-type: none;
+	width: math(100% - 20px);
+	margin: 0;
+	margin-left: 20px;
+	padding: 0;
+}
+
+ul.node li {
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+ul.node li button.action {
+	position: absolute;
+	right: 0;
+	top: 1px;
+	margin: 0;
+	padding: 0;
+	min-height: 18px;
+	min-width: 18px;
+}
+
+ul.node li button.slim {
+	margin: 0;
+	padding: 0;
+	min-height: 18px;
 }

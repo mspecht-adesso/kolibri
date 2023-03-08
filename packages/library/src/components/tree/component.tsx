@@ -12,7 +12,7 @@ import { spawn } from 'child_process';
 type TreeNode = {
 	_expanded?: boolean;
 	_id: string;
-	_key?: string;
+	_key: string;
 	_label: string;
 	_nodes: TreeNode[];
 };
@@ -22,11 +22,11 @@ type TreeNode = {
  */
 type RequiredProps = {
 	id: string;
+	key: string;
 	label: string;
 	nodes: Stringified<TreeNode[]>;
 };
 type OptionalProps = {
-	key?: string;
 	expanded?: boolean;
 };
 export type Props = Generic.Element.Members<RequiredProps, OptionalProps>;
@@ -34,8 +34,14 @@ export type Props = Generic.Element.Members<RequiredProps, OptionalProps>;
 type RequiredStates = {
 	expanded: boolean;
 	id: string;
+	key: string;
 	label: string;
 	nodes: TreeNode[];
+	domNode: TreeNode | null;
+	treeitems: TreeNode | null;
+	firstChars: TreeNode | null;
+	firstTreeitem: TreeNode | null;
+	lastTreeitem: TreeNode | null;
 } & OptionalProps;
 type OptionalStates = unknown;
 export type States = Generic.Element.Members<RequiredStates, OptionalStates>;
@@ -56,7 +62,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	/**
 	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
 	 */
-	@Prop() public _key?: string;
+	@Prop() public _key!: string;
 
 	/**
 	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
@@ -74,10 +80,16 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	@Prop({ mutable: true, reflect: true }) public _expanded?: boolean = false;
 
 	@State() public state: States = {
+		_expanded: false,
 		_id: nonce(),
+		_key: '',
 		_label: '',
 		_nodes: [],
-		_expanded: false,
+		_domNode: null,
+		_treeitems: null,
+		_firstChars: null,
+		_firstTreeitem: null,
+		_lastTreeitem: null,
 	};
 
 	@Watch('_id')
@@ -105,22 +117,137 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		watchBoolean(this, '_expanded', value);
 	}
 
+	private init() {
+		console.log('==========');
+		console.log('initialize tree-component -> _nodes');
+		console.log(this.state._nodes);
+		console.log('----------');
+
+		// const nodes = this.state._nodes ? this.state._nodes((node: TreeNode) => { ...node, '_tabIndex': 0 }) : []
+
+		console.log('==========');
+	}
+
+	private setFocusToItem(treeitem: TreeNode) {
+		console.log('---------- setFocusToItem ----------', treeitem._key);
+		console.log(treeitem);
+		for (let i = 0; i < this.state._nodes.length; i++) {
+			const ti = this.state._nodes[i];
+			console.log('-----', ti === treeitem);
+			console.log(ti);
+			/*
+			if (ti === treeitem) {
+				ti.tabIndex = 0;
+				ti.focus();
+			} else {
+				ti.tabIndex = -1;
+			}
+			*/
+		}
+	}
+
+	private setFocusToNextItem(currentItem: TreeNode) {
+		console.log('---------- setFocusToNextItem ----------', currentItem._key);
+		console.log(currentItem);
+		/*
+		const nextItem = false;
+
+		for (let i = this.state._treeitems.length - 1; i >= 0; i--) {
+			const ti = this.state._treeitems[i];
+			if (ti === currentItem) {
+				break;
+			}
+			if (ti.isVisible) {
+				nextItem = ti;
+			}
+		}
+
+		if (nextItem) {
+			this.setFocusToItem(nextItem);
+		}
+		*/
+	}
+
+	private setFocusToPreviousItem(currentItem: TreeNode) {
+		console.log('---------- setFocusToPreviousItem ----------', currentItem._key);
+		console.log(currentItem);
+		/*
+		const prevItem = false;
+
+		for (let i = 0; i < this.state._treeitems.length; i++) {
+			const ti = this.state._treeitems[i];
+			if (ti === currentItem) {
+				break;
+			}
+			if (ti.isVisible) {
+				prevItem = ti;
+			}
+		}
+
+		if (prevItem) {
+			this.setFocusToItem(prevItem);
+		}
+		*/
+	}
+
+	private setFocusToParentItem(currentItem: TreeNode) {
+		console.log('---------- setFocusToParentItem ----------', currentItem._key);
+		console.log(currentItem);
+		/*
+		if (currentItem.groupTreeitem) {
+			this.setFocusToItem(currentItem.groupTreeitem);
+		}
+		*/
+	}
+
+	private setFocusToFirstItem() {
+		console.log('---------- setFocusToFirstItem ----------');
+		// this.setFocusToItem(this.state._firstTreeitem);
+	}
+
 	private toggleOnClick(node: TreeNode, event: MouseEvent): void {
 		event.preventDefault();
 		event.stopImmediatePropagation();
-		console.log('/ ----------------------------------------');
-		console.log('toggleOnClick -> _expanded', node._label, node._expanded);
-		console.log('---------------------------------------- /');
+
 		this.toggleExpandedStatus(node);
 	}
 
 	private toggleOnKeyDown(node: TreeNode, event: KeyboardEvent): void {
+		console.log('toggleOnKeyDown -> key', event.key);
+		console.log(node);
 		event.preventDefault();
 		event.stopImmediatePropagation();
-		console.log('/ ----------------------------------------');
-		console.log('toggleOnKeyDown -> node', node._label, node._expanded);
-		console.log('---------------------------------------- /');
-		this.toggleExpandedStatus(node);
+
+		switch (event.key) {
+			case 'Enter':
+				console.log('Enter');
+				this.toggleExpandedStatus(node);
+				break;
+			case 'ArrowLeft':
+				console.log('ArrowLeft');
+				if (node._expanded) {
+					this.toggleExpandedStatus(node);
+				}
+				break;
+			case 'ArrowRight':
+				console.log('ArrowRight');
+				if (!node._expanded) {
+					this.toggleExpandedStatus(node);
+					this.setFocusToItem(node);
+				}
+				this.setFocusToNextItem(node);
+				break;
+			case 'ArrowUp':
+				console.log('ArrowUp');
+				this.setFocusToPreviousItem(node);
+				break;
+			case 'ArrowDown':
+				console.log('ArrowDown');
+				this.setFocusToNextItem(node);
+				break;
+			default:
+				return;
+		}
 	}
 
 	private toggleExpandedStatus(node: TreeNode): void {
@@ -135,25 +262,28 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 
 	private renderSubtree(expanded: boolean | undefined, node: TreeNode, index: number) {
 		return (
-			<ul hidden={!expanded}>
+			<ul role="group" hidden={!expanded} class="node">
 				<li
-					onClick={(event) => this.toggleOnClick(node, event)}
-					onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
 					key={index}
 					role="treeitem"
 					aria-expanded={expanded ? 'expanded' : 'collapsed'}
 					aria-posinset={index + 1}
 					aria-selected={node._expanded ? 'true' : 'false'}
 					aria-setsize={node._nodes?.length}
+					data-key={node._key}
 				>
-					{node._nodes.length > 0 ? <button>{node._expanded ? '▼' : '▶'}</button> : <button>{node._expanded ? '✓' : '▪'}</button>}
 					{node._nodes.length === 0 && node._key ? (
-						<button onClick={() => this.keyAction(node._key)} onKeyDown={() => this.keyAction(node._key)}>
+						<button class="slim" onClick={() => this.keyAction(node._key)} onKeyDown={() => this.keyAction(node._key)}>
 							{node._label}
 						</button>
 					) : (
 						<span>{node._label}</span>
 					)}
+					{node._nodes.length > 0 ? (
+						<button class="action" onClick={(event) => this.toggleOnClick(node, event)} onKeyDown={(event) => this.toggleOnKeyDown(node, event)}>
+							{node._expanded ? '-' : '+'}
+						</button>
+					) : null}
 				</li>
 				{node._nodes &&
 					Array.isArray(node._nodes) &&
@@ -165,8 +295,10 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	}
 
 	render() {
+		this.init();
+
 		return (
-			<ul role="tree" aria-labelledby="tree_label">
+			<ul role="tree" aria-labelledby="tree_label" class="tree">
 				{this.state._nodes.length > 0 &&
 					this.state._nodes.map((node, index) => {
 						return (
@@ -174,13 +306,14 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 								role="treeitem"
 								aria-expanded={this.state._expanded ? 'expanded' : 'collapsed'}
 								aria-selected={node._expanded ? 'true' : 'false'}
-								onClick={(event) => this.toggleOnClick(node, event)}
-								onKeyDown={(event) => this.toggleOnKeyDown(node, event)}
 								hidden={this.state._expanded}
 								key={`node${index}`}
+								data-key={node._key}
 							>
-								<button>{node._expanded ? '▼' : '▶'}</button>
 								<span>{node._label}</span>
+								<button class="action" onClick={(event) => this.toggleOnClick(node, event)} onKeyDown={(event) => this.toggleOnKeyDown(node, event)}>
+									{node._expanded ? '-' : '+'}
+								</button>
 								{node._nodes.length > 0 &&
 									node._nodes?.map((subNode, index) => {
 										return this.renderSubtree(node._expanded, subNode, index);

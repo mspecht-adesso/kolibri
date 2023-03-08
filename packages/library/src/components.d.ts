@@ -2189,7 +2189,7 @@ export namespace Components {
         /**
           * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
          */
-        "_key"?: string;
+        "_key": string;
         /**
           * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
          */
@@ -4729,7 +4729,7 @@ declare namespace LocalJSX {
         /**
           * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
          */
-        "_key"?: string;
+        "_key": string;
         /**
           * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
          */
