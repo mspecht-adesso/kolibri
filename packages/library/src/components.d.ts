@@ -2198,6 +2198,14 @@ export namespace Components {
           * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
          */
         "_nodes": Stringified<TreeNode[]>;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_selected"?: boolean;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_tabIndex": number;
     }
     interface KolVersion {
         /**
@@ -4738,6 +4746,14 @@ declare namespace LocalJSX {
           * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
          */
         "_nodes": Stringified<TreeNode[]>;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_selected"?: boolean;
+        /**
+          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+         */
+        "_tabIndex": number;
     }
     interface KolVersion {
         /**

@@ -5,7 +5,7 @@ import { Component, h, Prop, State, Watch } from '@stencil/core';
 import { Generic } from '@a11y-ui/core';
 import { Stringified } from '../../types/common';
 import { nonce } from '../../utils/dev.utils';
-import { setState, watchBoolean, watchJsonArrayString, watchString } from '../../utils/prop.validators';
+import { setState, watchBoolean, watchJsonArrayString, watchNumber, watchString } from '../../utils/prop.validators';
 
 type TreeNode = {
 	_expanded?: boolean;
@@ -13,6 +13,8 @@ type TreeNode = {
 	_key: string;
 	_label: string;
 	_nodes: TreeNode[];
+	_selected?: boolean;
+	_tabIndex?: number;
 };
 
 /**
@@ -26,6 +28,8 @@ type RequiredProps = {
 };
 type OptionalProps = {
 	expanded?: boolean;
+	selected?: boolean;
+	tabIndex?: number;
 };
 export type Props = Generic.Element.Members<RequiredProps, OptionalProps>;
 
@@ -40,6 +44,8 @@ type RequiredStates = {
 	firstChars: TreeNode | null;
 	firstTreeitem: TreeNode | null;
 	lastTreeitem: TreeNode | null;
+	selected: boolean;
+	tabIndex: number;
 } & OptionalProps;
 type OptionalStates = unknown;
 export type States = Generic.Element.Members<RequiredStates, OptionalStates>;
@@ -77,6 +83,16 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	 */
 	@Prop({ mutable: true, reflect: true }) public _expanded?: boolean = false;
 
+	/**
+	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 */
+	@Prop({ mutable: true, reflect: true }) public _selected?: boolean = false;
+
+	/**
+	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 */
+	@Prop() public _tabIndex!: number;
+
 	@State() public state: States = {
 		_expanded: false,
 		_id: nonce(),
@@ -88,6 +104,8 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		_firstChars: null,
 		_firstTreeitem: null,
 		_lastTreeitem: null,
+		_selected: false,
+		_tabIndex: 0,
 	};
 
 	@Watch('_id')
@@ -115,48 +133,66 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		watchBoolean(this, '_expanded', value);
 	}
 
+	@Watch('_selected')
+	public validateSelected(value?: boolean): void {
+		watchBoolean(this, '_selected', value);
+	}
+
+	@Watch('_tabIndex')
+	public validateTabIndex(value?: number): void {
+		watchNumber(this, '_tabIndex', value);
+	}
+
 	private init() {
 		console.log('==========');
 		console.log('initialize tree-component -> _nodes');
 		console.log(this.state._nodes);
+		console.log(this._nodes);
 		console.log('----------');
+		let newTree: TreeNode[] = this.state._nodes;
 
-		const newTree = this.addItemToTree(this.state._nodes, '_tabIndex');
+		newTree = this.addIndexToTree(newTree, '_tabIndex');
+		newTree = this.addKeyValueToTree(newTree, '_expanded', false);
+		newTree = this.addKeyValueToTree(newTree, '_selected', false);
 
 		console.log('newTree');
 		console.log(newTree);
-
 		console.log('==========');
+
+		setState(this, '_nodes', this.state._nodes);
 	}
 
-	private addItemToTree(tree: TreeNode[], key: string) {
-		console.log('addItemToTree', key);
+	private addIndexToTree(tree: TreeNode[], key: string) {
+		const newTree: TreeNode[] = tree.map((node: TreeNode, index: number) => ({ ...node, [key]: index, _nodes: this.addIndexToTree(node._nodes, key) }));
 
-		const newTree: TreeNode[] = tree.map((node: TreeNode, index: number) => ({ ...node, [key]: index, _nodes: this.addItemToTree(node._nodes, key) }));
+		return newTree;
+	}
+
+	private addKeyValueToTree(tree: TreeNode[], key: string, value: boolean | number | string) {
+		const newTree: TreeNode[] = tree.map((node: TreeNode) => ({ ...node, [key]: value, _nodes: this.addKeyValueToTree(node._nodes, key, value) }));
 
 		return newTree;
 	}
 
 	private setFocusToItem(treeitem: TreeNode) {
-		console.log('---------- setFocusToItem ----------', treeitem._key);
-		console.log(treeitem);
+		console.log('---------- setFocusToItem ----------', treeitem._key, treeitem._expanded, treeitem._selected, treeitem._tabIndex);
 		for (let i = 0; i < this.state._nodes.length; i++) {
 			const ti = this.state._nodes[i];
-			console.log('-----', ti === treeitem);
-			console.log(ti);
-			/*
 			if (ti === treeitem) {
+				console.log('----- ti equals treeitem ->', ti === treeitem, ti._tabIndex);
+				/*
 				ti.tabIndex = 0;
 				ti.focus();
-			} else {
+			} 
+			else {
 				ti.tabIndex = -1;
+				*/
 			}
-			*/
 		}
 	}
 
 	private setFocusToNextItem(currentItem: TreeNode) {
-		console.log('---------- setFocusToNextItem ----------', currentItem._key);
+		console.log('---------- setFocusToNextItem ----------', currentItem._key, currentItem._nodes.length);
 		console.log(currentItem);
 		/*
 		const nextItem = false;
@@ -219,39 +255,52 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		event.stopImmediatePropagation();
 
 		this.toggleExpandedStatus(node);
+		this.toggleSelectedStatus(node);
 	}
 
 	private toggleOnKeyDown(node: TreeNode, event: KeyboardEvent): void {
-		console.log('toggleOnKeyDown -> key', event.key);
+		console.log('---------- toggleOnKeyDown ---------- -> key', event.key);
 		console.log(node);
 		event.preventDefault();
 		event.stopImmediatePropagation();
 
 		switch (event.key) {
+			case 'Tab':
+				console.log('Tab', node._expanded, node._selected, node._nodes.length);
+				// this.toggleExpandedStatus(node);
+				break;
 			case 'Enter':
-				console.log('Enter');
+				console.log('Enter', node._expanded, node._selected, node._nodes.length);
 				this.toggleExpandedStatus(node);
+				this.toggleSelectedStatus(node);
+				this.setFocusToItem(node);
 				break;
 			case 'ArrowLeft':
-				console.log('ArrowLeft');
-				if (node._expanded) {
+				console.log('ArrowLeft', node._expanded, node._selected, node._nodes.length);
+				if (!node._expanded) {
+					this.setFocusToItem(node);
+				} else {
 					this.toggleExpandedStatus(node);
+					this.toggleSelectedStatus(node);
+					this.setFocusToPreviousItem(node);
 				}
 				break;
 			case 'ArrowRight':
-				console.log('ArrowRight');
+				console.log('ArrowRight', node._expanded, node._selected, node._nodes.length);
 				if (!node._expanded) {
 					this.toggleExpandedStatus(node);
+					this.toggleSelectedStatus(node);
 					this.setFocusToItem(node);
+				} else {
+					this.setFocusToNextItem(node);
 				}
-				this.setFocusToNextItem(node);
 				break;
 			case 'ArrowUp':
-				console.log('ArrowUp');
+				console.log('ArrowUp', node._expanded, node._selected, node._nodes.length);
 				this.setFocusToPreviousItem(node);
 				break;
 			case 'ArrowDown':
-				console.log('ArrowDown');
+				console.log('ArrowDown', node._expanded, node._selected, node._nodes.length);
 				this.setFocusToNextItem(node);
 				break;
 			default:
@@ -260,13 +309,33 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	}
 
 	private toggleExpandedStatus(node: TreeNode): void {
-		console.log('toggleExpandedStatus ->', node._expanded);
 		node._expanded = !node._expanded;
 		setState(this, '_nodes', this.state._nodes);
 	}
 
-	private keyAction(key: string | undefined) {
+	private toggleSelectedStatus(node: TreeNode): void {
+		node._selected = !node._selected;
+		setState(this, '_nodes', this.state._nodes);
+	}
+
+	private clickAction(key: string | undefined, event: MouseEvent) {
+		event.preventDefault();
+		event.stopImmediatePropagation();
+
 		console.log(key);
+	}
+
+	private keyAction(key: string | undefined, event: KeyboardEvent) {
+		switch (event.key) {
+			case 'Enter':
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				console.log(key);
+				break;
+			default:
+				console.log('Sorry, but no event on this key:', event.key);
+				return;
+		}
 	}
 
 	private renderSubtree(expanded: boolean | undefined, node: TreeNode, index: number) {
@@ -284,7 +353,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 					data-key={node._key}
 				>
 					{node._key ? (
-						<button class="slim" onClick={() => this.keyAction(node._key)} onKeyDown={() => this.keyAction(node._key)}>
+						<button class="slim" onClick={(event) => this.clickAction(node._key, event)} onKeyDown={(event) => this.keyAction(node._key, event)}>
 							{node._label}
 						</button>
 					) : (
@@ -306,8 +375,6 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 	}
 
 	render() {
-		this.init();
-
 		return (
 			<ul role="tree" aria-labelledby="tree_label" class="tree">
 				{this.state._nodes.length > 0 &&
@@ -315,8 +382,8 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 						return (
 							<li
 								role="treeitem"
-								aria-expanded={this.state._expanded ? 'expanded' : 'collapsed'}
-								aria-hidden={this.state._expanded}
+								aria-expanded={node._expanded ? 'expanded' : 'collapsed'}
+								aria-hidden={node._expanded}
 								aria-label={node._label}
 								aria-posinset={index + 1}
 								aria-selected={node._expanded ? 'true' : 'false'}
@@ -326,7 +393,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 								data-key={node._key}
 							>
 								{node._key ? (
-									<button class="slim" onClick={() => this.keyAction(node._key)} onKeyDown={() => this.keyAction(node._key)}>
+									<button class="slim" onClick={(event) => this.clickAction(node._key, event)} onKeyDown={(event) => this.keyAction(node._key, event)}>
 										{node._label}
 									</button>
 								) : (
@@ -352,5 +419,9 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		this.validateKey(this._key);
 		this.validateLabel(this._label);
 		this.validateNodes(this._nodes);
+		this.validateSelected(this._selected);
+		this.validateTabIndex(this._tabIndex);
+
+		this.init();
 	}
 }
