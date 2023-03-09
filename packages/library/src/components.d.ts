@@ -2179,31 +2179,31 @@ export namespace Components {
     }
     interface KolTree {
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt an, ob der Teil des Baumes aufgeklappt ist.
          */
         "_expanded"?: boolean;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt die ID an des Baumelements an.
          */
         "_id": string;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt den Schlüssel des Baumelements an.
          */
         "_key": string;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt den angezeigen Test des Baumelements an.
          */
         "_label": string;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Steht für die Unterelemente, die ein Baumelement hat.
          */
         "_nodes": Stringified<TreeNode[]>;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt an, ob das Baumelement ausgewählt ist.
          */
         "_selected"?: boolean;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt den TabIndex des Baumelements an. Wichtig für die Navigation mit der Tastatur.
          */
         "_tabIndex": number;
     }
@@ -4727,31 +4727,31 @@ declare namespace LocalJSX {
     }
     interface KolTree {
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt an, ob der Teil des Baumes aufgeklappt ist.
          */
         "_expanded"?: boolean;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt die ID an des Baumelements an.
          */
         "_id": string;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt den Schlüssel des Baumelements an.
          */
         "_key": string;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt den angezeigen Test des Baumelements an.
          */
         "_label": string;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Steht für die Unterelemente, die ein Baumelement hat.
          */
         "_nodes": Stringified<TreeNode[]>;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt an, ob das Baumelement ausgewählt ist.
          */
         "_selected"?: boolean;
         /**
-          * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+          * Gibt den TabIndex des Baumelements an. Wichtig für die Navigation mit der Tastatur.
          */
         "_tabIndex": number;
     }

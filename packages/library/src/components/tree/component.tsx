@@ -59,37 +59,37 @@ export type States = Generic.Element.Members<RequiredStates, OptionalStates>;
 })
 export class KolTree implements Generic.Element.ComponentApi<RequiredProps, OptionalProps, RequiredStates, OptionalStates> {
 	/**
-	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 * Gibt die ID an des Baumelements an.
 	 */
 	@Prop() public _id!: string;
 
 	/**
-	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 * Gibt den Schlüssel des Baumelements an.
 	 */
 	@Prop() public _key!: string;
 
 	/**
-	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 * Gibt den angezeigen Test des Baumelements an.
 	 */
 	@Prop() public _label!: string;
 
 	/**
-	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 * Steht für die Unterelemente, die ein Baumelement hat.
 	 */
 	@Prop() public _nodes!: Stringified<TreeNode[]>;
 
 	/**
-	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 * Gibt an, ob der Teil des Baumes aufgeklappt ist.
 	 */
 	@Prop({ mutable: true, reflect: true }) public _expanded?: boolean = false;
 
 	/**
-	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 * Gibt an, ob das Baumelement ausgewählt ist.
 	 */
 	@Prop({ mutable: true, reflect: true }) public _selected?: boolean = false;
 
 	/**
-	 * Gibt die ID an, wenn z.B. Aria-Labelledby (Link) verwendet wird.
+	 * Gibt den TabIndex des Baumelements an. Wichtig für die Navigation mit der Tastatur.
 	 */
 	@Prop() public _tabIndex!: number;
 
