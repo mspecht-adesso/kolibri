@@ -6,8 +6,6 @@ import { Generic } from '@a11y-ui/core';
 import { Stringified } from '../../types/common';
 import { nonce } from '../../utils/dev.utils';
 import { setState, watchBoolean, watchJsonArrayString, watchString } from '../../utils/prop.validators';
-import { KolButton } from '../button/shadow';
-import { spawn } from 'child_process';
 
 type TreeNode = {
 	_expanded?: boolean;
@@ -123,9 +121,20 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 		console.log(this.state._nodes);
 		console.log('----------');
 
-		// const nodes = this.state._nodes ? this.state._nodes((node: TreeNode) => { ...node, '_tabIndex': 0 }) : []
+		const newTree = this.addItemToTree(this.state._nodes, '_tabIndex');
+
+		console.log('newTree');
+		console.log(newTree);
 
 		console.log('==========');
+	}
+
+	private addItemToTree(tree: TreeNode[], key: string) {
+		console.log('addItemToTree', key);
+
+		const newTree: TreeNode[] = tree.map((node: TreeNode, index: number) => ({ ...node, [key]: index, _nodes: this.addItemToTree(node._nodes, key) }));
+
+		return newTree;
 	}
 
 	private setFocusToItem(treeitem: TreeNode) {
@@ -274,7 +283,7 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 					aria-setsize={node._nodes?.length}
 					data-key={node._key}
 				>
-					{node._nodes.length === 0 && node._key ? (
+					{node._key ? (
 						<button class="slim" onClick={() => this.keyAction(node._key)} onKeyDown={() => this.keyAction(node._key)}>
 							{node._label}
 						</button>
@@ -316,7 +325,13 @@ export class KolTree implements Generic.Element.ComponentApi<RequiredProps, Opti
 								key={`node${index}`}
 								data-key={node._key}
 							>
-								<span>{node._label}</span>
+								{node._key ? (
+									<button class="slim" onClick={() => this.keyAction(node._key)} onKeyDown={() => this.keyAction(node._key)}>
+										{node._label}
+									</button>
+								) : (
+									<span>{node._label}</span>
+								)}
 								<button class="action" onClick={(event) => this.toggleOnClick(node, event)} onKeyDown={(event) => this.toggleOnKeyDown(node, event)}>
 									{node._expanded ? '-' : '+'}
 								</button>
